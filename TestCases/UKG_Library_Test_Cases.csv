@@ -1,0 +1,29 @@
+Module,Test Case ID,Test Case Description,Preconditions,Test Steps,Expected Result
+Login,TC_LOGIN_01,Login with valid credentials,Open Login page,"Enter valid username and password, click 'Sign In'",User is redirected to Users screen
+Login,TC_LOGIN_02,Login with invalid username,Open Login page,"Enter invalid username and random password, click 'Sign In'",Error message 'The provided credentials are incorrect.'
+Login,TC_LOGIN_03,Login with invalid password,Open Login page,"Enter valid username and invalid password, click 'Sign In'",Error message 'The provided credentials are incorrect.'
+Login,TC_LOGIN_04,Navigate to Sign Up screen,Open Login page,Click 'Sign Up',User is redirected to Registration screen
+Login,TC_LOGIN_05,Navigate to Forgotten Password screen,Open Login page,Click 'Here' hyperlink,User is redirected to Forgotten Password screen
+Users,TC_USERS_01,View users list,Login to the platform,Click on 'Users' in main menu,All users are displayed in a table
+Users,TC_USERS_02,Create new user with valid name,"Login to the platform, open Users page","Click 'Add User', enter valid name , click save",User is added and visible in list
+Users,TC_USERS_03,Create user with name over 100 characters,"Login to the platform, open Users page","Enter 101 characters in 'Name', click save",Error message is displayed
+Users,TC_USERS_04,Create user with empty name,"Login to the platform, open Users page","Leave 'Name' empty, click save",Error message is displayed
+Users,TC_USERS_05,Edit user with valid data,"Login to the platform, open Users page","Click 'Edit' on user, change name, click save",User name is updated
+Users,TC_USERS_06,Edit user with name over 100 characters,"Login to the platform, open Users page","Click 'Edit' on user, enter 101 characters, click save",Error message is displayed
+Users,TC_USERS_07,Edit user with empty name,"Login to the platform, open Users page","Click 'Edit' on user, leave 'Name' empty, click save",Error message is displayed
+Users,TC_USERS_08,Delete user,"Login to the platform, open Users page","Click 'Delete' on user, confirm deletion",User is removed from the list
+Users,TC_USERS_09,View user details,"Login to the platform, open Users page",Click 'Details' on a user,User details screen is displayed
+Books,TC_BOOKS_01,View books list,Login to the platform,Click on 'Books' in main menu,All books are displayed in a table
+Books,TC_BOOKS_02,Create book with valid data,"Login to the platform, open Books page","Click 'Add Book', enter valid fields, click save",Book is added and visible in list
+Books,TC_BOOKS_03,Create book with field over limit,"Login to the platform, open Books page","Enter >250 chars in Name, >100 in Author, >50 in Genre, click save",Error messages are shown
+Books,TC_BOOKS_04,Create book with empty fields,"Login to the platform, open Books page","Leave fields empty, click save",Error message is displayed
+Books,TC_BOOKS_05,Edit book with valid data,"Login to the platform, open Books page","Click 'Edit' on book, modify fields, click save",Book is updated
+Books,TC_BOOKS_06,Edit book with field over limit,"Login to the platform, open Books page","Click 'Edit' on book, enter >250 chars in Name, >100 in Author, >50 in Genre, click save",Error messages are shown
+Books,TC_BOOKS_07,Edit book with empty fields,"Login to the platform, open Books page","Click 'Edit' on book, leave fields empty, click save",Error message is displayed
+Books,TC_BOOKS_08,Delete book,"Login to the platform, open Books page","Click 'Delete' on book, confirm deletion",Book is removed
+Books,TC_BOOKS_09,View book details,"Login to the platform, open Books page",Click 'Details' on book,Book details are shown
+Get a Book,TC_GETBOOK_01,View borrowed books list,Login to the platform,Click on 'Get a Book',List of borrowed books is shown
+Get a Book,TC_GETBOOK_02,Borrow a book,"Login to the platform, open Get a Book page","Click 'Add Request', select book and userf rom dropdowns, click save","Book is borrowed, book quantity decreased"
+Get a Book,TC_GETBOOK_03,Edit borrowed book entry,"Login to the platform, open Get a Book page","Click 'Edit' on entry, modify book/user, click save",Borrowed book record is updated
+Get a Book,TC_GETBOOK_04,Delete borrowed book entry,"Login to the platform, open Get a Book page","Click 'Delete' on entry, confirm deletion","Entry is deleted, book quantity increased"
+Get a Book,TC_GETBOOK_05,View borrowed book details,"Login to the platform, open Get a Book page",Click 'Details' on entry,Entry details are shown
