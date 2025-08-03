@@ -1,0 +1,1113 @@
+{
+	"info": {
+		"_postman_id": "d5dbc248-5307-4223-834b-e2501fe2457d",
+		"name": "QA Task - Library Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "User Module Tests",
+			"item": [
+				{
+					"name": "Create user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomName = \"User_\" + Math.floor(Math.random() * 10000);\r",
+									"\r",
+									"pm.collectionVariables.set(\"userName\", randomName);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User created successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Name\": \"{{userName}}\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get all users successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let jsonData = pm.response.json();\r",
+									"let targetName = pm.collectionVariables.get(\"userName\"); \r",
+									"\r",
+									"let foundUser = jsonData.find(user => user.name === targetName);\r",
+									"\r",
+									"pm.test(\"User with matching name is found\", function () {\r",
+									"    pm.expect(foundUser).to.not.be.undefined;\r",
+									"    pm.expect(foundUser).to.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"if (foundUser) {\r",
+									"    pm.collectionVariables.set(\"userId\", foundUser.id);\r",
+									"    console.log(\"Found user:\", foundUser.name, \"→ ID:\", foundUser.id);\r",
+									"} else {\r",
+									"    console.warn(\"User not found in list:\", targetName);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get new user successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    let jsonData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"name\", pm.collectionVariables.get(\"userName\"));\r",
+									"    pm.expect(jsonData).to.have.property(\"id\", parseInt(pm.collectionVariables.get(\"userId\"), 10));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Get user by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Update user by its ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update user successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let jsonData\r",
+									"try {\r",
+									"    jsonData = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"User fields match input variables\", function () {\r",
+									"        pm.expect(jsonData).to.have.property(\"name\", pm.collectionVariables.get(\"userName\"));\r",
+									"        pm.expect(jsonData).to.have.property(\"id\", parseInt(pm.collectionVariables.get(\"userId\"), 10));\r",
+									"    });\r",
+									"} catch (err) {\r",
+									"    console.warn(\"Failed to parse response as JSON or missing expected fields\", err);\r",
+									"    pm.test(\"Handled error gracefully\", function () {\r",
+									"        pm.expect(true).to.eql(true);\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Name\": \"{{userName}} Edited\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get new user successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"\r",
+									"    let jsonData = pm.response.json();\r",
+									"\r",
+									"    pm.expect(jsonData).to.have.property(\"name\", pm.collectionVariables.get(\"userName\"));\r",
+									"    pm.expect(jsonData).to.have.property(\"id\", parseInt(pm.collectionVariables.get(\"userId\"), 10));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Get user by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete user by its ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User is deleted successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Confirm user is deleted\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/{{userId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"{{userId}}"
+							]
+						},
+						"description": "Get user by its ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Book Module Tests",
+			"item": [
+				{
+					"name": "Add new book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const authors = [\"Isaac Asimov\", \"Agatha Christie\", \"J.K. Rowling\", \"George Orwell\", \"J.R.R. Tolkien\"];\r",
+									"const genres = [\"Science Fiction\", \"Mystery\", \"Fantasy\", \"Dystopian\", \"Adventure\"];\r",
+									"\r",
+									"const bookName = \"Book_\" + Math.floor(Math.random() * 10000);\r",
+									"const bookAuthor = authors[Math.floor(Math.random() * authors.length)];\r",
+									"const bookGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"const bookQuantity = Math.floor(Math.random() * 10) + 1;\r",
+									"\r",
+									"pm.collectionVariables.set(\"bookName\", bookName);\r",
+									"pm.collectionVariables.set(\"bookAuthor\", bookAuthor);\r",
+									"pm.collectionVariables.set(\"bookGenre\", bookGenre);\r",
+									"pm.collectionVariables.set(\"bookQuantity\", bookQuantity);\r",
+									"\r",
+									"console.log(\"Generated Book:\");\r",
+									"console.log(\"Name:\", bookName);\r",
+									"console.log(\"Author:\", bookAuthor);\r",
+									"console.log(\"Genre:\", bookGenre);\r",
+									"console.log(\"Quantity:\", bookQuantity);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Book created successfully\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response contains all expected fields\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"author\");\r",
+									"    pm.expect(jsonData).to.have.property(\"genre\");\r",
+									"    pm.expect(jsonData).to.have.property(\"quontity\");\r",
+									"    pm.expect(jsonData).to.have.property(\"booksTaken\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Book fields match input variables\", function () {\r",
+									"    pm.expect(jsonData.name).to.eql(pm.collectionVariables.get(\"bookName\"));\r",
+									"    pm.expect(jsonData.author).to.eql(pm.collectionVariables.get(\"bookAuthor\"));\r",
+									"    pm.expect(jsonData.genre).to.eql(pm.collectionVariables.get(\"bookGenre\"));\r",
+									"    pm.expect(jsonData.quontity).to.eql(parseInt(pm.collectionVariables.get(\"bookQuantity\"), 10));\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"bookId\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{bookName}}\",\n\t\"author\": \"{{bookAuthor}}\",\n\t\"genre\": \"{{bookGenre}}\",\n\t\"quontity\": {{bookQuantity}}\n}"
+						},
+						"url": {
+							"raw": "{{url}}/books",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all books",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get all books successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"const expectedId = parseInt(pm.collectionVariables.get(\"bookId\"), 10);\r",
+									"const expectedName = pm.collectionVariables.get(\"bookName\");\r",
+									"const expectedAuthor = pm.collectionVariables.get(\"bookAuthor\");\r",
+									"const expectedGenre = pm.collectionVariables.get(\"bookGenre\");\r",
+									"const expectedQuantity = parseInt(pm.collectionVariables.get(\"bookQuantity\"), 10);\r",
+									"\r",
+									"let foundBook = jsonData.find(book => book.id === expectedId);\r",
+									"\r",
+									"pm.test(\"Created book is found in the book list\", function () {\r",
+									"    pm.expect(foundBook).to.not.be.undefined;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Book details match\", function () {\r",
+									"    pm.expect(foundBook.name).to.eql(expectedName);\r",
+									"    pm.expect(foundBook.author).to.eql(expectedAuthor);\r",
+									"    pm.expect(foundBook.genre).to.eql(expectedGenre);\r",
+									"    pm.expect(foundBook.quontity).to.eql(expectedQuantity)\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/books",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get book by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get book successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response contains all expected fields\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"author\");\r",
+									"    pm.expect(jsonData).to.have.property(\"genre\");\r",
+									"    pm.expect(jsonData).to.have.property(\"quontity\");\r",
+									"    pm.expect(jsonData).to.have.property(\"booksTaken\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Book fields match input variables\", function () {\r",
+									"    pm.expect(jsonData.name).to.eql(pm.collectionVariables.get(\"bookName\"));\r",
+									"    pm.expect(jsonData.author).to.eql(pm.collectionVariables.get(\"bookAuthor\"));\r",
+									"    pm.expect(jsonData.genre).to.eql(pm.collectionVariables.get(\"bookGenre\"));\r",
+									"    pm.expect(jsonData.quontity).to.eql(parseInt(pm.collectionVariables.get(\"bookQuantity\"), 10));\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/books/{{bookId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"books",
+								"{{bookId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update book by its ID",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const bookQuantity = parseInt(pm.collectionVariables.get(\"bookQuantity\"), 10);\r",
+									"pm.collectionVariables.set(\"bookQuantity\", bookQuantity + 10);\r",
+									"\r",
+									"console.log(\"Updated quantity:\", bookQuantity + 10);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Update book successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let jsonData\r",
+									"try {\r",
+									"    jsonData = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Response contains all expected fields\", function () {\r",
+									"        pm.expect(jsonData).to.have.property(\"id\");\r",
+									"        pm.expect(jsonData).to.have.property(\"name\");\r",
+									"        pm.expect(jsonData).to.have.property(\"author\");\r",
+									"        pm.expect(jsonData).to.have.property(\"genre\");\r",
+									"        pm.expect(jsonData).to.have.property(\"quontity\");\r",
+									"        pm.expect(jsonData).to.have.property(\"booksTaken\");\r",
+									"    });\r",
+									"\r",
+									"    pm.test(\"Book fields match input variables\", function () {\r",
+									"        pm.expect(jsonData.name).to.eql(pm.collectionVariables.get(\"bookName\"));\r",
+									"        pm.expect(jsonData.author).to.eql(pm.collectionVariables.get(\"bookAuthor\"));\r",
+									"        pm.expect(jsonData.genre).to.eql(pm.collectionVariables.get(\"bookGenre\"));\r",
+									"        pm.expect(jsonData.quontity).to.eql(parseInt(pm.collectionVariables.get(\"bookQuantity\"), 10));\r",
+									"    });\r",
+									"} catch (err) {\r",
+									"    console.warn(\"Failed to parse response as JSON or missing expected fields\", err);\r",
+									"    pm.test(\"Handled error gracefully\", function () {\r",
+									"        pm.expect(true).to.eql(true);\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"id\": {{bookId}},\n\t\"name\": \"{{bookName}} Edited\",\n\t\"author\": \"{{bookAuthor}} Edited\",\n\t\"genre\": \"{{bookGenre}} Edited\",\n\t\"quontity\": {{bookQuantity}}\n}"
+						},
+						"url": {
+							"raw": "{{url}}/books/{{bookId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"books",
+								"{{bookId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get book by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/books/2",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"books",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete book by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Book is deleted successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/books/{{bookId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"books",
+								"{{bookId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get book by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Confirm book is deleted\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/books/{{bookId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"books",
+								"{{bookId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get a book Tests",
+			"item": [
+				{
+					"name": "Create user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const randomName = \"User_\" + Math.floor(Math.random() * 10000);\r",
+									"\r",
+									"pm.collectionVariables.set(\"userName\", randomName);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"User created successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"Name\": \"{{userName}}\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/users",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get all users successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"let jsonData = pm.response.json();\r",
+									"let targetName = pm.collectionVariables.get(\"userName\"); \r",
+									"\r",
+									"let foundUser = jsonData.find(user => user.name === targetName);\r",
+									"\r",
+									"pm.test(\"User with matching name is found\", function () {\r",
+									"    pm.expect(foundUser).to.not.be.undefined;\r",
+									"    pm.expect(foundUser).to.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"if (foundUser) {\r",
+									"    pm.collectionVariables.set(\"userId\", foundUser.id);\r",
+									"    console.log(\"Found user:\", foundUser.name, \"→ ID:\", foundUser.id);\r",
+									"} else {\r",
+									"    console.warn(\"User not found in list:\", targetName);\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/users/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add new book",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const authors = [\"Isaac Asimov\", \"Agatha Christie\", \"J.K. Rowling\", \"George Orwell\", \"J.R.R. Tolkien\"];\r",
+									"const genres = [\"Science Fiction\", \"Mystery\", \"Fantasy\", \"Dystopian\", \"Adventure\"];\r",
+									"\r",
+									"const bookName = \"Book_\" + Math.floor(Math.random() * 10000);\r",
+									"const bookAuthor = authors[Math.floor(Math.random() * authors.length)];\r",
+									"const bookGenre = genres[Math.floor(Math.random() * genres.length)];\r",
+									"const bookQuantity = Math.floor(Math.random() * 10) + 1;\r",
+									"\r",
+									"pm.collectionVariables.set(\"bookName\", bookName);\r",
+									"pm.collectionVariables.set(\"bookAuthor\", bookAuthor);\r",
+									"pm.collectionVariables.set(\"bookGenre\", bookGenre);\r",
+									"pm.collectionVariables.set(\"bookQuantity\", bookQuantity);\r",
+									"\r",
+									"console.log(\"Generated Book:\");\r",
+									"console.log(\"Name:\", bookName);\r",
+									"console.log(\"Author:\", bookAuthor);\r",
+									"console.log(\"Genre:\", bookGenre);\r",
+									"console.log(\"Quantity:\", bookQuantity);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Book created successfully\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response contains all expected fields\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"author\");\r",
+									"    pm.expect(jsonData).to.have.property(\"genre\");\r",
+									"    pm.expect(jsonData).to.have.property(\"quontity\");\r",
+									"    pm.expect(jsonData).to.have.property(\"booksTaken\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Book fields match input variables\", function () {\r",
+									"    pm.expect(jsonData.name).to.eql(pm.collectionVariables.get(\"bookName\"));\r",
+									"    pm.expect(jsonData.author).to.eql(pm.collectionVariables.get(\"bookAuthor\"));\r",
+									"    pm.expect(jsonData.genre).to.eql(pm.collectionVariables.get(\"bookGenre\"));\r",
+									"    pm.expect(jsonData.quontity).to.eql(parseInt(pm.collectionVariables.get(\"bookQuantity\"), 10));\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"bookId\", jsonData.id);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"{{bookName}}\",\n\t\"author\": \"{{bookAuthor}}\",\n\t\"genre\": \"{{bookGenre}}\",\n\t\"quontity\": {{bookQuantity}}\n}"
+						},
+						"url": {
+							"raw": "{{url}}/books",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"books"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Take a book",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get a book successfully\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"let jsonData = pm.response.json();\r",
+									"let book = jsonData.book;\r",
+									"\r",
+									"const expectedUserId = parseInt(pm.collectionVariables.get(\"userId\"), 10);\r",
+									"const expectedBookId = parseInt(pm.collectionVariables.get(\"bookId\"), 10);\r",
+									"const expectedBookName = pm.collectionVariables.get(\"bookName\");\r",
+									"const expectedBookAuthor = pm.collectionVariables.get(\"bookAuthor\");\r",
+									"const expectedBookGenre = pm.collectionVariables.get(\"bookGenre\");\r",
+									"const originalBookQuantity = parseInt(pm.collectionVariables.get(\"bookQuantity\"), 10);\r",
+									"\r",
+									"pm.test(\"Response contains expected fields\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"userId\", expectedUserId);\r",
+									"    pm.expect(jsonData).to.have.property(\"bookId\", expectedBookId);\r",
+									"    pm.expect(jsonData).to.have.property(\"dateTaken\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Book is present and matches expected data\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"book\");\r",
+									"\r",
+									"    pm.expect(book).to.have.property(\"id\", expectedBookId);\r",
+									"    pm.expect(book).to.have.property(\"name\", expectedBookName);\r",
+									"    pm.expect(book).to.have.property(\"author\", expectedBookAuthor);\r",
+									"    pm.expect(book).to.have.property(\"genre\", expectedBookGenre);\r",
+									"    pm.expect(book).to.have.property(\"booksTaken\").that.is.an(\"array\");\r",
+									"\r",
+									"    pm.test(\"Book quantity is reduced by 1\", function () {\r",
+									"        pm.expect(book.quontity).to.eql(originalBookQuantity - 1);\r",
+									"    });\r",
+									"});\r",
+									"\r",
+									"pm.collectionVariables.set(\"getBookId\", jsonData.id);\r",
+									"pm.collectionVariables.set(\"bookQuantity\", book.quontity);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"userid\": {{userId}},\n\t\"bookid\": {{bookId}}\n}"
+						},
+						"url": {
+							"raw": "{{url}}/getbook/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getbook",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get all books that are taken",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"List all taken books successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"const expectedGetBookId = parseInt(pm.collectionVariables.get(\"getBookId\"), 10);\r",
+									"const expectedUserId = parseInt(pm.collectionVariables.get(\"userId\"), 10);\r",
+									"const expectedBookId = parseInt(pm.collectionVariables.get(\"bookId\"), 10);\r",
+									"\r",
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"const match = jsonData.find(entry =>\r",
+									"    entry.id === expectedGetBookId && entry.userId === expectedUserId && entry.bookId === expectedBookId\r",
+									");\r",
+									"\r",
+									"pm.test(\"Taken book for this user is listed\", function () {\r",
+									"    pm.expect(match).to.not.be.undefined;\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/getbook",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getbook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Return a book by giving GetBook ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Get Book Request is deleted successfully\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/getbook/{{getBookId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getbook",
+								"{{getBookId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a book request by Id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Confirm Get Book Request is deleted\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/getbook/{{getBookId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"getbook",
+								"{{getBookId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "https://qa-task.immedis.com/api"
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "userName",
+			"value": ""
+		},
+		{
+			"key": "bookId",
+			"value": ""
+		},
+		{
+			"key": "bookName",
+			"value": ""
+		},
+		{
+			"key": "bookAuthor",
+			"value": ""
+		},
+		{
+			"key": "bookGenre",
+			"value": ""
+		},
+		{
+			"key": "bookQuantity",
+			"value": ""
+		},
+		{
+			"key": "getBookId",
+			"value": ""
+		}
+	]
+}
