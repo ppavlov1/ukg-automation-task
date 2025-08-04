@@ -39,7 +39,7 @@ json
   "Password": "123456"
 }
 ```
-🚀 Running the Tests
+# Running the Tests
 ✅ Run All Tests
 ```dotnet test```
 
