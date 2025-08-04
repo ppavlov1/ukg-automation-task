@@ -14,7 +14,7 @@ This repository contains an end-to-end test automation framework for the **Libra
 
 ---
 # Project Structure
-
+```
 ukg-library-automation/
 ├── AutomationTests/
 │ ├── Pages/ # Page Object Model classes for UI
@@ -26,7 +26,7 @@ ukg-library-automation/
 │ ├── Utilities/ # Helpers
 │ ├── appsettings.json # Config file for URLs and credentials
 │ └── AutomationTests.csproj
-
+```
 ---
 # Configuration
 
