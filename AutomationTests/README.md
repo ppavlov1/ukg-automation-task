@@ -31,23 +31,23 @@ ukg-library-automation/
 # Configuration
 
 Edit `appsettings.json` with the appropriate values:
-
+```
 json
 {
   "BaseUrl": "http://localhost:5000",
   "Username": "admin",
   "Password": "123456"
 }
-
+```
 🚀 Running the Tests
 ✅ Run All Tests
-dotnet test
+```dotnet test```
 
 ✅ Run Specific Category
-dotnet test --filter TestCategory=UI
+```dotnet test --filter TestCategory=UI```
 Or from Visual Studio Test Explorer.
 
- Features Covered
+# Features Covered
  - UI Tests
     Login
     Users Page
