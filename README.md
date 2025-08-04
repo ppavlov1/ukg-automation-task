@@ -15,7 +15,7 @@ The project covers test planning, manual testing, API and UI automation, integra
 ---
 
 # Project Structure
-
+```
 ukg-automation-task/
 ├── AutomationTests/      # UI + API test automation (C#, NUnit)
 ├── PostmanTests/         # Postman collection and environment
@@ -23,3 +23,4 @@ ukg-automation-task/
 ├── TestCases/            # Manual test cases
 ├── BugReports/           # Defects with repro steps
 └── README.md             # This file
+```
